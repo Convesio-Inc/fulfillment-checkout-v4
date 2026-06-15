@@ -1,40 +1,5 @@
-/**
- * CheckoutPage
- * -----------------------------------------------------------------------------
- * Top-level checkout page. Composes every section into a two-column layout
- * (form on the left, order summary on the right) that collapses to a single
- * column on narrow viewports.
- *
- * This component owns:
- *   - All customer + shipping form state (lifted from the individual cards).
- *   - The live `ConvesioPayComponent` handle, captured via
- *     `PaymentInfoCard.onComponentReady`, used to call `createToken()` on
- *     submit.
- *   - The payment status machine via `useCheckoutPayment`, which drives the
- *     `PaymentStatusDialog` through "processing" → "success" / "failed".
- *
- * Native HTML5 `required` attributes on every input stop the form from
- * submitting until the browser's built-in validation passes.
- *
- * Edit section headings, payment amount, product SKU/name here.
- * All colors come from the `BRAND THEME` block in `src/index.css`.
- *
- * ⚠  Keep AMOUNT_MINOR in sync with the Total shown in OrderSummaryCard.tsx.
- *
- * Layout (top to bottom, all inside a single `max-w-6xl` content column):
- *   - CheckoutHeader  — floating card matching the section cards below
- *   - Two-column grid — form stack + order summary
- *
- * Markers:
- *   - root            data-page="checkout"
- *   - form column     data-region="form-stack"
- *   - summary column  data-region="summary"
- * -----------------------------------------------------------------------------
- */
-
 import { useCallback, useRef, useState } from "react";
 
-import { CheckoutHeader } from "@/components/checkout/CheckoutHeader";
 import {
   CustomerInfo,
   type CustomerInfoValue,
@@ -46,14 +11,17 @@ import {
   ShippingInfo,
   type ShippingInfoValue,
 } from "@/components/checkout/ShippingInfo";
+import { BundleSelector } from "@/components/checkout/BundleSelector";
+import { BUNDLES, type Bundle } from "@/components/checkout/bundles";
+import { ProductHeroCard } from "@/components/checkout/ProductHeroCard";
+import { GuaranteeCard } from "@/components/checkout/GuaranteeCard";
+import { ReviewsSection } from "@/components/checkout/ReviewsSection";
+import { IngredientsPanel } from "@/components/checkout/IngredientsPanel";
 import { useCheckoutPayment } from "@/hooks/useCheckoutPayment";
-import { SectionCard } from "@/components/checkout/primitives/SectionCard";
+import { LockIcon } from "lucide-react";
 
 const PRODUCT_SKU = "1234567890";
 const PRODUCT_NAME = "Vitamin Essentials Pack";
-
-/** Charge sent to ConvesioPay in cents. Must match the Total in OrderSummaryCard.tsx. */
-const AMOUNT_MINOR = 5695;
 const CURRENCY = "USD";
 
 const INITIAL_CUSTOMER: CustomerInfoValue = {
@@ -76,10 +44,10 @@ export function CheckoutPage() {
   const [customer, setCustomer] = useState<CustomerInfoValue>(INITIAL_CUSTOMER);
   const [shipping, setShipping] = useState<ShippingInfoValue>(INITIAL_SHIPPING);
   const [isPaymentValid, setIsPaymentValid] = useState(false);
+  const [selectedBundle, setSelectedBundle] = useState<Bundle>(
+    BUNDLES.find((b) => b.isMostChosen) ?? BUNDLES[0],
+  );
 
-  // The live ConvesioPay component, captured once the SDK mounts. Held in a
-  // ref (not state) because we only need it at submit-time — re-rendering on
-  // mount would cause unnecessary work.
   const componentRef = useRef<ConvesioPayComponent | null>(null);
   const handleComponentReady = useCallback((c: ConvesioPayComponent) => {
     componentRef.current = c;
@@ -104,7 +72,7 @@ export function CheckoutPage() {
     await pay(componentRef.current, {
       email: customer.email,
       name: shipping.fullName,
-      amount: AMOUNT_MINOR,
+      amount: selectedBundle.totalAmountMinor,
       currency: CURRENCY,
       phone: {
         number: customer.phoneNumber,
@@ -116,61 +84,92 @@ export function CheckoutPage() {
         {
           sku: PRODUCT_SKU,
           description: PRODUCT_NAME,
-          quantity: 1,
-          amountIncludingTax: AMOUNT_MINOR,
+          quantity: selectedBundle.bottleCount,
+          amountIncludingTax: selectedBundle.totalAmountMinor,
         },
-      ]
+      ],
     });
   };
 
   const isProcessing = status === "processing";
 
   return (
-    <main
-      data-page="checkout"
-      className="bg-background"
-    >
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 sm:px-6">
-        <CheckoutHeader />
+    <main data-page="checkout" className="bg-[#f5f0e8] pb-12">
+      <div className="mx-auto w-full max-w-[1100px] px-4 sm:px-6 py-6">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-[1.65fr_1fr] lg:items-start">
 
+          {/* LEFT: social proof column */}
+          <div data-region="form-stack">
+            <ProductHeroCard />
+            <BundleSelector value={selectedBundle} onChange={setSelectedBundle} />
+            <GuaranteeCard />
+            <ReviewsSection />
+            <IngredientsPanel />
+          </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.6fr_1fr] lg:items-start">
-            {/* #region SECTION: Form Stack */}
-            <div data-region="form-stack">
-              <SectionCard section="checkout-panel">
-                <section data-section="customer-info">
-                  <h2 className="mb-4 text-base font-medium text-[#163427] flex items-center gap-4">
-                    <span className="bg-black text-white rounded-full h-6 w-6 flex items-center justify-center text-sm">1</span>
-                    Customer Information
+          {/* RIGHT: sticky form card */}
+          <div data-region="summary" className="lg:sticky lg:top-6">
+            <div className="bg-white rounded-[10px] overflow-hidden shadow-sm">
+              {/* Form card header */}
+              <div className="bg-[#1a3028] text-white px-4 py-3 flex items-center justify-between">
+                <div>
+                  <div className="text-[11px] font-bold tracking-[0.1em] flex items-center gap-1.5">
+                    <LockIcon className="w-3 h-3" />
+                    SAFE &amp; SECURE ORDER FORM
+                  </div>
+                  <div className="text-[9px] text-[#7ab89a] tracking-[0.06em] mt-0.5">
+                    256-BIT SECURE ENCRYPTION
+                  </div>
+                </div>
+                <span className="bg-white/15 text-[10px] px-2 py-1 rounded-[4px] tracking-[0.06em]">
+                  🔒 https
+                </span>
+              </div>
+
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="px-4 pb-4">
+                {/* Section 1: Contact */}
+                <section data-section="customer-info" className="pt-4">
+                  <h2 className="text-[13px] font-semibold text-[#1a3028] mb-3 flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-[#1a3028] text-white text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+                      1
+                    </span>
+                    Contact
+                    <span className="text-[10px] text-[#aaa] font-normal ml-auto">
+                      Tracking link goes here.
+                    </span>
                   </h2>
-                  <CustomerInfo
-                    value={customer}
-                    onChange={setCustomer}
-                  />
+                  <CustomerInfo value={customer} onChange={setCustomer} />
                 </section>
 
-                <section
-                  data-section="shipping-info"
-                  className="mt-2 pt-5"
-                >
-                  <h2 className="mb-4 text-base font-medium text-[#163427] flex items-center gap-4">
-                    <span className="bg-black text-white rounded-full h-6 w-6 flex items-center justify-center text-sm">2</span>
-                    Shipping Information
+                <div className="h-px bg-[#f0ece4] my-3" />
+
+                {/* Section 2: Shipping */}
+                <section data-section="shipping-info">
+                  <h2 className="text-[13px] font-semibold text-[#1a3028] mb-3 flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-[#1a3028] text-white text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+                      2
+                    </span>
+                    Shipping address
+                    <span className="text-[10px] text-[#aaa] font-normal ml-auto">
+                      U.S. only · free 2–4 day.
+                    </span>
                   </h2>
-                  <ShippingInfo
-                    value={shipping}
-                    onChange={setShipping}
-                  />
+                  <ShippingInfo value={shipping} onChange={setShipping} />
                 </section>
 
-                <section
-                  data-section="payment-info"
-                  className="mt-2 pt-5"
-                >
-                  <h2 className="mb-4 text-base font-medium text-[#163427] flex items-center gap-4">
-                    <span className="bg-black text-white rounded-full h-6 w-6 flex items-center justify-center text-sm">3</span>
-                    Payment Information
+                <div className="h-px bg-[#f0ece4] my-3" />
+
+                {/* Section 3: Payment */}
+                <section data-section="payment-info">
+                  <h2 className="text-[13px] font-semibold text-[#1a3028] mb-3 flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-[#1a3028] text-white text-[11px] font-bold flex items-center justify-center flex-shrink-0">
+                      3
+                    </span>
+                    Payment
+                    <span className="text-[10px] text-[#aaa] font-normal ml-auto">
+                      We never store your card.
+                    </span>
                   </h2>
                   <PaymentInfo
                     customerEmail={customer.email || undefined}
@@ -179,20 +178,16 @@ export function CheckoutPage() {
                   />
                 </section>
 
-              </SectionCard>
+                <OrderSummaryCard
+                  selectedBundle={selectedBundle}
+                  payDisabled={!isPaymentValid}
+                  payLoading={isProcessing}
+                />
+              </form>
             </div>
-            {/* #endregion */}
-
-            {/* #region SECTION: Cart Summary */}
-            <div data-region="summary" className="lg:sticky lg:top-6">
-              <OrderSummaryCard
-                payDisabled={!isPaymentValid}
-                payLoading={isProcessing}
-              />
-            </div>
-            {/* #endregion */}
           </div>
-        </form>
+
+        </div>
       </div>
 
       <PaymentStatusDialog
