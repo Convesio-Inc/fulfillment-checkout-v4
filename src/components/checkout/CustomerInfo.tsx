@@ -29,7 +29,7 @@ export function CustomerInfo({ value, onChange }: CustomerInfoCardProps) {
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="Email" icon={<Icon.Mail className="w-4 h-4" />} dataField="email">
           <input
             className={inputCls}

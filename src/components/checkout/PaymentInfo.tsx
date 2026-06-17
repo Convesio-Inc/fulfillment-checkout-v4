@@ -42,26 +42,24 @@ export function PaymentInfo({
 
   return (
     <div>
-      <div className="rounded-xl border border-line bg-paper2 p-3">
-        <div
-          ref={mountRef}
-          data-slot="cpay-mount"
-          id="cpay-checkout-component"
-          className="min-h-[220px]"
-        />
+      <div
+        ref={mountRef}
+        data-slot="cpay-mount"
+        id="cpay-checkout-component"
+        className="min-h-[200px]"
+      />
 
-        {status === "loading" && (
-          <p data-slot="cpay-loading" className="text-[13px] text-ink3" aria-live="polite">
-            Loading secure payment form…
-          </p>
-        )}
+      {status === "loading" && (
+        <p data-slot="cpay-loading" className="text-[13px] text-ink3" aria-live="polite">
+          Loading secure payment form…
+        </p>
+      )}
 
-        {status === "error" && (
-          <p data-slot="cpay-error" role="alert" className="text-[13px] text-rust">
-            {error?.message ?? "Could not load the payment form."}
-          </p>
-        )}
-      </div>
+      {status === "error" && (
+        <p data-slot="cpay-error" role="alert" className="text-[13px] text-rust">
+          {error?.message ?? "Could not load the payment form."}
+        </p>
+      )}
 
       <div className="mt-4 flex items-center justify-between text-[11px] text-ink3">
         <span className="inline-flex items-center gap-1.5">

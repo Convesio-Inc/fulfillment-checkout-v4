@@ -69,14 +69,14 @@ export function Step({ n, title, icon, defaultOpen = true, summaryRight, childre
   return (
     <details className="step" open={defaultOpen}>
       <summary className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
           <span className="num text-[11px] w-6 h-6 inline-flex items-center justify-center rounded-full bg-ink text-paper">
             {n}
           </span>
           <span className="text-[15.5px] font-semibold tracking-tight text-ink">{title}</span>
           {icon}
         </div>
-        <div className="flex items-center gap-3 text-ink3">
+        <div className="flex items-center gap-3 text-ink3 shrink-0">
           {summaryRight}
           <Icon.Caret className="caret w-4 h-4" />
         </div>

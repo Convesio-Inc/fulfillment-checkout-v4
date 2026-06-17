@@ -94,8 +94,8 @@ export function CheckoutPage() {
 
   return (
     <main data-page="checkout" className="min-h-screen">
-      <div className="max-w-[720px] mx-auto px-6 py-12">
-        <div className="flex items-baseline justify-between">
+      <div className="max-w-[720px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
+        <div className="flex flex-wrap items-baseline justify-between gap-y-2">
           <h1 className="text-[32px] font-semibold tracking-[-0.02em] leading-none text-ink">
             Almost there.
           </h1>
@@ -120,14 +120,14 @@ export function CheckoutPage() {
               n="1"
               title="Your supply"
               summaryRight={
-                <span className="num text-[12px] text-ink">
+                <span className="num text-[12px] text-ink whitespace-nowrap">
                   <span className="text-ink3 smallcaps mr-2">{selectedBundle.bottleCount}× · one-time</span>
                   {totalFmt}
                 </span>
               }
             >
               <BundleSelector value={selectedBundle} onChange={setSelectedBundle} />
-              <div className="mt-4 grid grid-cols-3 gap-x-4 gap-y-1 text-[11px] text-ink3">
+              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-ink3">
                 <span className="inline-flex items-center gap-1.5"><Icon.Check className="w-3 h-3" /> Free shipping</span>
                 <span className="inline-flex items-center gap-1.5"><Icon.Check className="w-3 h-3" /> 90-day return</span>
                 <span className="inline-flex items-center gap-1.5"><Icon.Check className="w-3 h-3" /> Cancel anytime</span>

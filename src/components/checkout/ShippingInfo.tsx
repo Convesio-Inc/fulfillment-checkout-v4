@@ -46,7 +46,7 @@ export function ShippingInfo({ value, onChange }: ShippingInfoProps) {
       onChange({ ...value, [key]: e.target.value });
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <Field label="First name" span="col-span-1" dataField="first-name">
         <input className={inputCls} type="text" autoComplete="given-name" placeholder="Alex" required value={value.firstName} onChange={set("firstName")} />
       </Field>
