@@ -32,6 +32,22 @@
     --color-gold: #caa15a;
     --color-gold2: #8d6a2a;
 
+    /* === AG1 WARM PALETTE (Checkout v4 reference) === */
+    --color-sand: #eddfc4;
+    --color-sand2: #e4d3ad;
+    --color-paper: #fbf3dd;
+    --color-paper2: #f7eece;
+    --color-ink: #0a0b0d;
+    --color-ink2: #2a2b25;
+    --color-ink3: #65665d;
+    --color-ink4: #a09d8c;
+    --color-line: #d4c69f;
+    --color-line2: #e3d5b1;
+    --color-lime: #cde04a;
+    --color-lime2: #aec33a;
+    --color-lime3: #e6f08b;
+    --color-rust: #b04923;
+
     /* === shadcn / app shell tokens === */
     --color-brand: var(--brand);
     --color-brand-foreground: var(--brand-foreground);
@@ -226,7 +242,112 @@
         #f0ead8;
 }
 
-.rule { border-top: 1px solid #ece5d2; }
+.rule { border-top: 1px solid #e3d5b1; }
+
+/* === AG1 helpers (Checkout v4) === */
+.smallcaps { text-transform: uppercase; letter-spacing: 0.14em; font-size: 10.5px; font-weight: 500; }
+.strike { text-decoration: line-through; text-decoration-thickness: 1px; color: #a09d8c; }
+::selection { background: #cde04a; color: #0a0b0d; }
+
+/* Warm-paper inputs (checkout only — class-scoped, dashboard untouched) */
+.ck-input {
+  font-family: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  background: #fbf3dd;
+  border: 1px solid #d4c69f;
+  width: 100%;
+  padding: 13px 14px;
+  font-size: 14.5px;
+  color: #0a0b0d;
+  border-radius: 12px;
+  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.ck-input::placeholder { color: #a09d8c; }
+.ck-input:focus {
+  outline: none;
+  border-color: #0a0b0d;
+  box-shadow: 0 0 0 4px rgba(10, 11, 13, 0.08);
+  background: #fff8e2;
+}
+select.ck-input {
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%230a0b0d' stroke-width='1.4' stroke-linecap='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+/* Segmented control */
+.seg-track { background: #e4d3ad; border: 1px solid #d4c69f; border-radius: 999px; padding: 4px; }
+.seg-on { background: #0a0b0d; color: #fbf3dd; border-radius: 999px; }
+.seg-on-lime { background: #cde04a; color: #0a0b0d; border-radius: 999px; }
+
+/* Plan card */
+.plan {
+  background: #fbf3dd; border: 1px solid #d4c69f; border-radius: 16px;
+  transition: border-color .15s ease, transform .12s ease, box-shadow .15s ease, background .15s ease;
+}
+.plan:hover:not(.on) { border-color: #0a0b0d; transform: translateY(-1px); }
+.plan.on { background: #0a0b0d; color: #fbf3dd; border-color: #0a0b0d; box-shadow: 0 14px 28px -16px rgba(10,11,13,0.4); }
+.plan .ringdot {
+  width: 18px; height: 18px; border-radius: 999px; border: 1.5px solid #c8b993;
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: border-color .15s ease, background .15s ease; position: relative;
+}
+.plan.on .ringdot { border-color: #cde04a; background: #cde04a; }
+.plan.on .ringdot::after { content: ''; width: 6px; height: 6px; border-radius: 999px; background: #0a0b0d; }
+
+/* Save chip */
+.save-chip {
+  background: #cde04a; color: #0a0b0d; border-radius: 999px;
+  padding: 2px 8px; font-size: 10.5px; font-weight: 600; letter-spacing: 0.04em;
+}
+
+/* Accordion step */
+details.step { border-bottom: 1px solid #e3d5b1; padding: 22px 0; }
+details.step:last-child { border-bottom: 0; }
+details.step[open] summary .caret { transform: rotate(180deg); }
+details.step summary { list-style: none; cursor: pointer; }
+details.step summary::-webkit-details-marker { display: none; }
+.caret { transition: transform .2s ease; }
+
+/* Lime CTA + state machine */
+.cta {
+  position: relative; background: #cde04a; color: #0a0b0d; border-radius: 999px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.45) inset,
+    0 -1px 0 rgba(0,0,0,0.1) inset,
+    0 1px 2px rgba(10,11,13,0.08),
+    0 12px 24px -10px rgba(174,195,58,0.45);
+  overflow: hidden;
+  transition: transform .14s cubic-bezier(.2,.7,.2,1), background .15s ease, box-shadow .14s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.cta:hover:not(:disabled) { background: #d8e966; }
+.cta:active:not(:disabled) {
+  transform: translateY(1px) scale(.995); background: #b9cc3d;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.3) inset, 0 -1px 0 rgba(0,0,0,0.1) inset, 0 4px 10px -4px rgba(10,11,13,0.2);
+}
+.cta:disabled { filter: saturate(0.55) brightness(0.99); cursor: not-allowed; }
+.cta .arrow-slot {
+  width: 32px; height: 32px; border-radius: 999px; background: rgba(10,11,13,0.10);
+  display: inline-flex; align-items: center; justify-content: center;
+  transition: transform .25s cubic-bezier(.2,.7,.2,1), background .15s ease;
+}
+.cta:hover:not(:disabled) .arrow-slot { transform: translateX(3px); background: rgba(10,11,13,0.18); }
+.spinner { width: 16px; height: 16px; border-radius: 999px; border: 2px solid rgba(10,11,13,0.2); border-top-color: #0a0b0d; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes drawcheck { 0% { stroke-dashoffset: 30; opacity: 0; transform: scale(.7); } 20% { opacity: 1; } 100% { stroke-dashoffset: 0; opacity: 1; transform: scale(1); } }
+.check-anim path { stroke-dasharray: 30; stroke-dashoffset: 30; animation: drawcheck .5s cubic-bezier(.2,.7,.2,1) .1s forwards; }
+.cta .cta-label { transition: opacity .2s ease, transform .2s ease; }
+.cta[data-state="idle"] .cta-label { opacity: 1; transform: translateY(0); }
+.cta[data-state="busy"] .cta-label, .cta[data-state="done"] .cta-label { opacity: 0; transform: translateY(-2px); }
+.cta .cta-busy, .cta .cta-done {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 12px;
+  opacity: 0; transform: translateY(2px); transition: opacity .2s ease, transform .2s ease; pointer-events: none;
+}
+.cta[data-state="busy"] .cta-busy { opacity: 1; transform: translateY(0); }
+.cta[data-state="done"] { background: #0a8a55; color: #ffffff; }
+.cta[data-state="done"] .cta-done { opacity: 1; transform: translateY(0); }
 
 @keyframes livedot {
     0%, 100% { opacity: 1; transform: scale(1); }
